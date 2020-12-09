@@ -1,6 +1,9 @@
 name: "Test"
 on:
   workflow_dispatch:
+  schedule:
+    # every sunday at 2:51
+    - cron:  '51 2 * * 0'
 jobs:
   tests:
     runs-on: ubuntu-latest
