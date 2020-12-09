@@ -1,2 +1,2 @@
 # nix-index-database
-Generated nix-index databases
+Regulary generate [nix-index](https://github.com/bennofs/nix-index) databases
