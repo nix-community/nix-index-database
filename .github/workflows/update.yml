@@ -1,19 +1,48 @@
-name: "Test"
+name: "index-generate"
 on:
   workflow_dispatch:
   schedule:
     # every sunday at 2:51
     - cron:  '51 2 * * 0'
 jobs:
-  tests:
-    runs-on: ubuntu-latest
+  index:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            indexName: x86_64-linux
+          - os: macos-latest
+            indexName: x86_64-darwin
+    name: Build database
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v13
       with:
         nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz
-    - name: Build database
-      run: nix-shell -p nix-index --command "nix-index --db . 2>&1 | grep -v '+ generating index'"
+    - name: run nix-index
+      run: nix-shell -p nix-index --command "nix-index --db ./${{ matrix.indexName }}-index 2>&1 | grep -v '+ generating index'"
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.indexName }}
+        path: ./${{ matrix.indexName }}-index
+
+  upload-index:
+    runs-on: ubuntu-latest
+    needs: index
+    steps:
+    - name: download linux artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: x86_64-linux
+        path: linux-index
+    - name: download darwin artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: x86_64-darwin
+        path: darwin-index
+
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
@@ -27,13 +56,23 @@ jobs:
         release_name: Release ${{ steps.date.outputs.date }}
         draft: false
         prerelease: false
-    - name: Upload Release Asset
-      id: upload-release-asset
+    - name: Upload Linux Release Asset
+      id: upload-linux-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./files
-        asset_name: files
+        asset_path: linux-index/files
+        asset_name: index-x86_64-linux
+        asset_content_type: application/octet-stream
+    - name: Upload Darwin Release Asset
+      id: upload-darwin-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: darwin-index/files
+        asset_name: index-x86_64-darwin
         asset_content_type: application/octet-stream
