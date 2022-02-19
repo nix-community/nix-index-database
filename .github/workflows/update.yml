@@ -48,17 +48,15 @@ jobs:
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        name: Release ${{ steps.date.outputs.date }}
         tag_name: ${{ steps.date.outputs.date }}
-        release_name: Release ${{ steps.date.outputs.date }}
-        draft: false
-        prerelease: false
     - name: Upload Linux Release Asset
       id: upload-linux-asset
-      uses: actions/upload-release-asset@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -68,7 +66,7 @@ jobs:
         asset_content_type: application/octet-stream
     - name: Upload Darwin Release Asset
       id: upload-darwin-asset
-      uses: actions/upload-release-asset@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
