@@ -37,15 +37,13 @@ jobs:
       with:
         name: x86_64-linux
         path: linux-index
+    - run: mv linux-index/files index-x86_64-linux
     - name: download darwin artifact
       uses: actions/download-artifact@v2
       with:
         name: x86_64-darwin
         path: darwin-index
-    - name: rename assets
-      run: |
-        mv linux-index/files index-x86_64-linux
-        mv darwin-index/files index-x86_64-dariwn
+    - run: mv darwin-index/files index-x86_64-darwin
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
