@@ -42,7 +42,10 @@ jobs:
       with:
         name: x86_64-darwin
         path: darwin-index
-
+    - name: rename assets
+      run: |
+        mv linux-index/files index-x86_64-linux
+        mv darwin-index/files index-x86_64-dariwn
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
@@ -54,23 +57,6 @@ jobs:
       with:
         name: Release ${{ steps.date.outputs.date }}
         tag_name: ${{ steps.date.outputs.date }}
-    - name: Upload Linux Release Asset
-      id: upload-linux-asset
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: linux-index/files
-        asset_name: index-x86_64-linux
-        asset_content_type: application/octet-stream
-    - name: Upload Darwin Release Asset
-      id: upload-darwin-asset
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: darwin-index/files
-        asset_name: index-x86_64-darwin
-        asset_content_type: application/octet-stream
+        files: |
+          index-x86_64-linux
+          index-x86_64-darwin
