@@ -33,13 +33,13 @@ jobs:
     needs: index
     steps:
     - name: download linux artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: x86_64-linux
         path: linux-index
     - run: mv linux-index/files index-x86_64-linux
     - name: download darwin artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: x86_64-darwin
         path: darwin-index
