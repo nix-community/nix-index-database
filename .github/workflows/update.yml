@@ -58,3 +58,43 @@ jobs:
         files: |
           index-x86_64-linux
           index-x86_64-darwin
+
+  update-flake:
+    runs-on: ubuntu-latest
+    needs: upload-index
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    - name: prefetch linux index
+      id: prefetch-linux
+      run: echo "::set-output name=hash::$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/Mic92/nix-index-database/releases/download/${{ steps.date.outputs.date }}/index-x86_64-linux)"
+    - name: prefetch darwin index
+      id: prefetch-darwin
+      run: echo "::set-output name=hash::$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/Mic92/nix-index-database/releases/download/${{ steps.date.outputs.date }}/index-x86_64-darwin)"
+    - name: overwrite flake.nix
+      run: |
+        cat > flake.nix << EOF
+        {
+          description = "nix-index database";
+          outputs = { nixpkgs, ... }: {
+            packages.x86_64-linux.database = nixpkgs.legacyPackages.x86_64-linux.fetchurl {
+              url = "https://github.com/Mic92/nix-index-database/releases/download/${{ steps.date.outputs.date }}/index-x86_64-linux";
+              sha256 = "${{ steps.prefetch-linux.outputs.hash }}";
+            };
+            packages.x86_64-darwin.database = nixpkgs.legacyPackages.x86_64-darwin.fetchurl {
+              url = "https://github.com/Mic92/nix-index-database/releases/download/${{ steps.date.outputs.date }}/index-x86_64-darwin";
+              sha256 = "${{ steps.prefetch-darwin.outputs.hash }}";
+            };
+          };
+        }
+        EOF
+    - name: commit and push flake.nix
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add flake.nix
+        git commit -m "update flake.nix to release ${{ steps.date.outputs.date }}"
+        git push origin HEAD:main
