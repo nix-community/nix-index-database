@@ -82,11 +82,11 @@ jobs:
           description = "nix-index database";
           outputs = _:
             {
-              database.x86_64-linux = builtins.fetchurl {
+              legacyPackages.x86_64-linux.database = builtins.fetchurl {
                 url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-linux";
                 sha256 = "${{ steps.prefetch-linux.outputs.hash }}";
               };
-              database.x86_64-darwin = builtins.fetchurl {
+              legacyPackages.x86_64-darwin.database = builtins.fetchurl {
                 url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-darwin";
                 sha256 = "${{ steps.prefetch-darwin.outputs.hash }}";
               };
