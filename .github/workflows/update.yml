@@ -17,7 +17,7 @@ jobs:
     name: Build database
     steps:
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v17
+    - uses: cachix/install-nix-action@v18
       with:
         nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz
     - name: run nix-index
@@ -64,7 +64,7 @@ jobs:
     needs: upload-index
     steps:
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v17
+    - uses: cachix/install-nix-action@v18
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
