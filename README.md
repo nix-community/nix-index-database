@@ -1,10 +1,12 @@
 # nix-index-database
+
 Weekly updated [nix-index](https://github.com/bennofs/nix-index) database
 
 A simple integration example:
-```
+
+```shell
 (
-  filename="index-x86_64-$(uname | tr A-Z a-z)"
+  filename="index-$(uname -m)-$(uname | tr A-Z a-z)"
   mkdir -p ~/.cache/nix-index
   cd ~/.cache/nix-index
   # -N will only download a new version if there is an update.
