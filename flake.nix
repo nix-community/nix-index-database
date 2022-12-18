@@ -4,16 +4,16 @@
   outputs = _:
     {
       legacyPackages.x86_64-linux.database = builtins.fetchurl {
-        url = "https://github.com/Mic92/nix-index-database/releases/download/2022-12-11/index-x86_64-linux";
-        sha256 = "0h8vivjg8bc6gj2dj9z3wqdff4cgv1p7mmw9hjbh2ca6dikmggyb";
+        url = "https://github.com/Mic92/nix-index-database/releases/download/2022-12-18/index-x86_64-linux";
+        sha256 = "1dd8b8zy6899pr3sdcvfg5k31dpfjmbqp1in3xhaw1aq2yjnla57";
       };
       legacyPackages.x86_64-darwin.database = builtins.fetchurl {
-        url = "https://github.com/Mic92/nix-index-database/releases/download/2022-12-11/index-x86_64-darwin";
-        sha256 = "0hbvqxa8dg09rzs8z9v7d4nkdncfpzf616vqlpz8x7pcwns1cf9l";
+        url = "https://github.com/Mic92/nix-index-database/releases/download/2022-12-18/index-x86_64-darwin";
+        sha256 = "08h5r3ykswpr93f3jgkf74xrmbigcxggb81m3rjpdnpb8gz7npmn";
       };
       legacyPackages.aarch64-linux.database = builtins.fetchurl {
-        url = "https://github.com/Mic92/nix-index-database/releases/download/2022-12-11/index-aarch64-linux";
-        sha256 = "1mam9r3affl8vffh5yxrmh3rk7vyqq07cm7dg92cshwmxrambydc";
+        url = "https://github.com/Mic92/nix-index-database/releases/download/2022-12-18/index-aarch64-linux";
+        sha256 = "1vrn4fvfyldags3g84xiy9z343g5qnm5r8s14sdwhbqzbwswwb6d";
       };
     };
 }
