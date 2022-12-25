@@ -2,8 +2,11 @@
 
 Weekly updated [nix-index](https://github.com/bennofs/nix-index) database
 
-This repository also provides nixos modules and home-manager modules that adds
-`nix-index` wrapper to uses the database from this repository.
+This repository also provides nixos modules and home-manager modules that add a
+`nix-index` wrapper to use the database from this repository.
+
+The home-manager module also allows integration with the existing `command-not-found`
+functionality.
 
 ## Usage in NixOS
 
@@ -34,12 +37,11 @@ Include the nixos module in your configuration
 1. Follow the [manual](https://github.com/nix-community/home-manager/blob/master/docs/nix-flakes.adoc) to set up home-manager with flakes.
 2. Include the home-manager module in your configuration:
 
-
 ```nix
 {
   inputs = {
     nix-index-database.url = "github:Mic92/nix-index-database";
-    
+
     # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
@@ -63,6 +65,11 @@ Include the nixos module in your configuration
 
 }
 ```
+
+Additionally, if your shell is managed by home-manager, you can have `nix-index`
+integrate with your shell's `command-not-found` functionality by
+setting `programs.nix-index.enable = true`.
+
 
 ## Ad-hoc download
 

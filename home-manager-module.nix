@@ -1,10 +1,9 @@
-{ legacyPackages }:
-{ config, pkgs, inputs, ... }:
+{ packages }:
+{ lib, pkgs, ... }:
 
 {
-  home.packages = [
-    (pkgs.callPackage ./nix-index-wrapper.nix {
-      nix-index-database = legacyPackages.${pkgs.hostPlatform.system}.database;
-    })
-  ];
+  programs.nix-index = {
+    enable = lib.mkDefault true;
+    package = packages.${pkgs.system}.nix-index-with-db;
+  };
 }

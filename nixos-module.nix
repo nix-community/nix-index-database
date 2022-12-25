@@ -1,8 +1,6 @@
-{ legacyPackages }:
-{ config, pkgs, inputs, ... }: {
+{ packages }:
+{ pkgs, ... }: {
   environment.systemPackages = [
-    (pkgs.callPackage ./nix-index-wrapper.nix {
-      nix-index-database = legacyPackages.${pkgs.hostPlatform.system}.database;
-    })
+    packages.${pkgs.system}.nix-index-with-db
   ];
 }
