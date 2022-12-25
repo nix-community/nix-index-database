@@ -25,7 +25,7 @@ jobs:
     - name: Setup cachix
       uses: cachix/cachix-action@v12
       with:
-        name: ${{ matrix.cachixName }}
+        name: mic92
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
     - name: run nix-index
       run: nix run github:Mic92/nix-index/docs -- --db ./${{ matrix.indexName }}-index --system ${{matrix.indexName}}
