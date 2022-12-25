@@ -6,16 +6,14 @@ on:
     - cron:  '51 2 * * 0'
 jobs:
   index:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            indexName: x86_64-linux
-          - os: macos-latest
-            indexName: x86_64-darwin
-          - os: ubuntu-latest
-            indexName: aarch64-linux
+          - indexName: x86_64-linux
+          - indexName: aarch64-linux
+          - indexName: x86_64-darwin
+          - indexName: aarch64-darwin
     name: Build database
     steps:
     - uses: actions/checkout@v3
@@ -23,12 +21,8 @@ jobs:
       with:
         nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz
         extra_nix_config: 'access-tokens = github.com=${{ github.token }}'
-    - run: |
-        sudo apt-get update -q -y && sudo apt-get install -q -y qemu-system-aarch64 qemu-efi binfmt-support qemu-user-static
-        sudo bash -c "echo system-features = aarch64-linux arm-linux >> /etc/nix/nix.conf"
-      if: ${{ matrix.indexName == 'aarch64-linux' }}
     - name: run nix-index
-      run: nix-shell -p nix-index --command "nix-index --db ./${{ matrix.indexName }}-index 2>&1 | grep -v '+ generating index'" --option system ${{ matrix.indexName }} --extra-platforms ${{ matrix.indexName }}
+      run: nix run github:Mic92/nix-index/docs -- nix-index --db ./${{ matrix.indexName }}-index --system ${matrix.indexName}
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
@@ -44,19 +38,26 @@ jobs:
       with:
         name: x86_64-linux
         path: x86_64-linux-index
-    - run: mv x86_64-linux-index/files index-x86_64-linux
-    - name: download x86_64-darwin artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: x86_64-darwin
-        path: x86_64-darwin-index
-    - run: mv x86_64-darwin-index/files index-x86_64-darwin
     - name: download aarch64-linux artifact
       uses: actions/download-artifact@v3
       with:
         name: aarch64-linux
         path: aarch64-linux-index
-    - run: mv aarch64-linux-index/files index-aarch64-linux
+    - name: download x86_64-darwin artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: x86_64-darwin
+        path: x86_64-darwin-index
+    - name: download aarch64-darwin artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: aarch64-darwin
+        path: aarch64-darwin-index
+    - run: |
+        mv x86_64-linux-index/files index-x86_64-linux
+        mv aarch64-linux-index/files index-aarch64-linux
+        mv x86_64-darwin-index/files index-x86_64-darwin
+        mv aarch64-darwin-index/files index-aarch64-darwin
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
@@ -70,8 +71,9 @@ jobs:
         tag_name: ${{ steps.date.outputs.date }}
         files: |
           index-x86_64-linux
-          index-x86_64-darwin
           index-aarch64-linux
+          index-x86_64-darwin
+          index-aarch64-darwin
 
   update-flake:
     runs-on: ubuntu-latest
@@ -87,12 +89,15 @@ jobs:
     - name: prefetch x86_64-linux index
       id: prefetch-x86_64-linux
       run: echo "::set-output name=hash::$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-linux)"
-    - name: prefetch x86_64-darwin index
-      id: prefetch-x86_64-darwin
-      run: echo "::set-output name=hash::$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-darwin)"
     - name: prefetch aarch64-linux index
       id: prefetch-aarch64-linux
       run: echo "::set-output name=hash::$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-aarch64-linux)"
+    - name: prefetch x86_64-darwin index
+      id: prefetch-x86_64-darwin
+      run: echo "::set-output name=hash::$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-darwin)"
+    - name: prefetch aarch64-darwin index
+      id: prefetch-aarch64-darwin
+      run: echo "::set-output name=hash::$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-aarch64-darwin)"
     - name: overwrite flake.nix
       run: |
         cat > packages.nix << EOF
@@ -101,6 +106,10 @@ jobs:
           x86_64-linux.database = builtins.fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-linux";
             sha256 = "${{ steps.prefetch-x86_64-linux.outputs.hash }}";
+          };
+          aarch64-linux.database = builtins.fetchurl {
+            url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-aarch64-linux";
+            sha256 = "${{ steps.prefetch-aarch64-linux.outputs.hash }}";
           };
           x86_64-darwin.database = builtins.fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-darwin";
