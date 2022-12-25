@@ -22,7 +22,7 @@ jobs:
         nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz
         extra_nix_config: 'access-tokens = github.com=${{ github.token }}'
     - name: run nix-index
-      run: nix run github:Mic92/nix-index/docs -- nix-index --db ./${{ matrix.indexName }}-index --system ${matrix.indexName}
+      run: nix run github:Mic92/nix-index/docs -- nix-index --db ./${{ matrix.indexName }}-index --system ${{matrix.indexName}}
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
