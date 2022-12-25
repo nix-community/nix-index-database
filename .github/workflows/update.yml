@@ -121,9 +121,9 @@ jobs:
             url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-x86_64-darwin";
             sha256 = "${{ steps.prefetch-x86_64-darwin.outputs.hash }}";
            };
-          aarch64-linux.database = builtins.fetchurl {
-            url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-aarch64-linux";
-            sha256 = "${{ steps.prefetch-aarch64-linux.outputs.hash }}";
+          aarch64-darwin.database = builtins.fetchurl {
+            url = "https://github.com/${{ github.repository }}/releases/download/${{ steps.date.outputs.date }}/index-aarch64-darwin";
+            sha256 = "${{ steps.prefetch-aarch64-darwin.outputs.hash }}";
           };
         }
         EOF
