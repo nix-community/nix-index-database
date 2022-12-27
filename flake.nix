@@ -21,7 +21,7 @@
       legacyPackages = import ./packages.nix;
 
       hmModules.nix-index = import ./home-manager-module.nix {
-        inherit packages;
+        inherit (self) packages legacyPackages;
       };
 
       nixosModules.nix-index = import ./nixos-module.nix {
