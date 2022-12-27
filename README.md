@@ -10,7 +10,7 @@ functionality.
 
 ## Usage in NixOS
 
-Include the nixos module in your configuration
+Include the nixos module in your configuration (requires 23.05 or nixos unstable)
 
 ```nix
 {
