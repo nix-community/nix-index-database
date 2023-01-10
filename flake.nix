@@ -1,7 +1,7 @@
 {
   description = "nix-index database";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/master";
 
   outputs = { self, nixpkgs, ... }: with nixpkgs.lib;
     let

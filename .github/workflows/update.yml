@@ -28,7 +28,7 @@ jobs:
         name: mic92
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
     - name: run nix-index
-      run: nix run github:bennofs/nix-index -- --db ./${{ matrix.indexName }}-index --system ${{matrix.indexName}} 2>&1 | grep -v '+ generating index:'
+      run: nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.indexName }}-index --system ${{matrix.indexName}} 2>&1 | grep -v '+ generating index:'
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
