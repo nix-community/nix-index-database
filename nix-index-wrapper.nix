@@ -6,6 +6,7 @@
 runCommand "nix-index-with-db"
 {
   nativeBuildInputs = [ makeWrapper ];
+  meta.mainProgram = "nix-locate";
 } ''
   mkdir -p $out/share/cache/nix-index
   ln -s ${nix-index-database} $out/share/cache/nix-index/files
