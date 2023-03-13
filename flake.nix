@@ -9,6 +9,7 @@
 
       packages = genAttrs systems
         (system: {
+          default = self.packages.${system}.nix-index-with-db;
           nix-index-with-db =
             nixpkgs.legacyPackages.${system}.callPackage ./nix-index-wrapper.nix {
               nix-index-database = self.legacyPackages.${system}.database;
