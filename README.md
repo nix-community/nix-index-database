@@ -8,6 +8,13 @@ This repository also provides nixos modules and home-manager modules that add a
 The home-manager module also allows integration with the existing `command-not-found`
 functionality.
 
+## Demo
+
+``` shell
+$ nix run github:mic92/nix-index-database bin/cntr
+cntr.out                                        978,736 x /nix/store/09p2hys5bxcnzcaad3bknlnwsgdkznl1-cntr-1.5.1/bin/cntr
+```
+
 ## Usage in NixOS
 
 Include the nixos module in your configuration (requires 23.05 or nixos unstable)
