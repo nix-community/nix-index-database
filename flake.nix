@@ -21,6 +21,10 @@
 
       legacyPackages = import ./packages.nix;
 
+      darwinModules.nix-index = import ./darwin-module.nix {
+        inherit (self) packages;
+      };
+
       hmModules.nix-index = import ./home-manager-module.nix {
         inherit (self) packages legacyPackages;
       };
