@@ -12,6 +12,7 @@ jobs:
         include:
           - indexName: x86_64-linux
           - indexName: aarch64-linux
+          - indexName: i686-linux
           - indexName: x86_64-darwin
           - indexName: aarch64-darwin
     name: Build database
