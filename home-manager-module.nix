@@ -15,11 +15,11 @@
   config = {
     programs.nix-index = {
       enable = lib.mkDefault true;
-      package = packages.${pkgs.system}.nix-index-with-db;
+      package = packages.${pkgs.stdenv.system}.nix-index-with-db;
     };
 
     home.file."${config.xdg.cacheHome}/nix-index/files" =
       lib.mkIf config.programs.nix-index.symlinkToCacheHome
-        { source = legacyPackages.${pkgs.system}.database; };
+        { source = legacyPackages.${pkgs.stdenv.system}.database; };
   };
 }
