@@ -1,5 +1,5 @@
-{ packages }:
+{ packages, lib }:
 { pkgs, ... }: {
-  programs.nix-index.enable = true;
-  programs.nix-index.package = packages.${pkgs.stdenv.system}.nix-index-with-db;
+  programs.nix-index.enable = lib.mkDefault true;
+  programs.nix-index.package = lib.mkDefault packages.${pkgs.stdenv.system}.nix-index-with-db;
 }
