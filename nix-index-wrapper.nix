@@ -3,7 +3,7 @@
 , nix-index-unwrapped
 , nix-index-database
 }:
-runCommand "nix-index-with-db"
+runCommand "nix-index-with-db-${nix-index-unwrapped.version}"
 {
   nativeBuildInputs = [ makeWrapper ];
   meta.mainProgram = "nix-locate";

@@ -35,6 +35,8 @@ Include the nixos module in your configuration (requires 23.05 or nixos unstable
         modules = [
           ./configuration.nix
           nix-index-database.nixosModules.nix-index
+          # optional to also wrap and install comma
+          # { programs.nix-index-database.comma.enable = true; }
         ];
       };
     };
@@ -71,6 +73,8 @@ Include the nixos module in your configuration (requires 23.05 or nixos unstable
 
         modules = [
           nix-index-database.hmModules.nix-index
+          # optional to also wrap and install comma
+          # { programs.nix-index-database.comma.enable = true; }
         ];
       };
     };

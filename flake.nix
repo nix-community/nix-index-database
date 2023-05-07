@@ -14,6 +14,10 @@
             nixpkgs.legacyPackages.${system}.callPackage ./nix-index-wrapper.nix {
               nix-index-database = self.legacyPackages.${system}.database;
             };
+          comma-with-db =
+            nixpkgs.legacyPackages.${system}.callPackage ./comma-wrapper.nix {
+              nix-index-database = self.legacyPackages.${system}.database;
+            };
         });
     in
     {
