@@ -12,6 +12,6 @@
     programs.nix-index.enable = lib.mkDefault true;
     programs.nix-index.package = lib.mkDefault packages.${pkgs.stdenv.system}.nix-index-with-db;
     environment.systemPackages = lib.optional config.programs.nix-index-database.comma.enable 
-      packages.${pkgs.stdenv.system}.nix-index-with-db;
+      packages.${pkgs.stdenv.system}.comma-with-db;
   };
 }
