@@ -19,7 +19,7 @@ jobs:
     name: Build database
     steps:
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v20
+    - uses: cachix/install-nix-action@v21
       with:
         nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz
         extra_nix_config: 'access-tokens = github.com=${{ github.token }}'
@@ -97,7 +97,7 @@ jobs:
     needs: upload-index
     steps:
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v20
+    - uses: cachix/install-nix-action@v21
       with:
         extra_nix_config: 'access-tokens = github.com=${{ github.token }}'
     - name: prefetch x86_64-linux index
