@@ -36,5 +36,10 @@
       nixosModules.nix-index = import ./nixos-module.nix {
         inherit packages;
       };
+
+      checks.x86_64-linux = import ./tests.nix {
+        inherit nixpkgs;
+        nixIndexModule = self.nixosModules.nix-index;
+      };
     };
 }
