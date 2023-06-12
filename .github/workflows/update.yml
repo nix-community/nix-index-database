@@ -13,7 +13,6 @@ jobs:
           - indexName: x86_64-linux
           - indexName: aarch64-linux
           # breaks often and no one fixes it
-          #- indexName: i686-linux
           - indexName: x86_64-darwin
           - indexName: aarch64-darwin
     name: Build database
@@ -74,11 +73,6 @@ jobs:
       with:
         name: x86_64-linux
         path: x86_64-linux-index
-    - name: download i686-linux artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: i686-linux
-        path: i686-linux-index
     - name: download aarch64-linux artifact
       uses: actions/download-artifact@v3
       with:
@@ -97,7 +91,6 @@ jobs:
     - run: |
         mv x86_64-linux-index/files index-x86_64-linux
         mv aarch64-linux-index/files index-aarch64-linux
-        mv i686-linux-index/files index-i686-linux
         mv x86_64-darwin-index/files index-x86_64-darwin
         mv aarch64-darwin-index/files index-aarch64-darwin
     - name: Get current date
@@ -114,7 +107,6 @@ jobs:
         files: |
           index-x86_64-linux
           index-aarch64-linux
-          index-i686-linux
           index-x86_64-darwin
           index-aarch64-darwin
 
@@ -132,9 +124,6 @@ jobs:
     - name: prefetch aarch64-linux index
       id: prefetch-aarch64-linux
       run: echo "hash=$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-aarch64-linux)" >> ${GITHUB_OUTPUT}
-    - name: prefetch i686-linux index
-      id: prefetch-i686-linux
-      run: echo "hash=$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-i686-linux)" >> ${GITHUB_OUTPUT}
     - name: prefetch x86_64-darwin index
       id: prefetch-x86_64-darwin
       run: echo "hash=$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-x86_64-darwin)" >> ${GITHUB_OUTPUT}
@@ -153,10 +142,6 @@ jobs:
           aarch64-linux.database = builtins.fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-aarch64-linux";
             sha256 = "${{ steps.prefetch-aarch64-linux.outputs.hash }}";
-          };
-          i686-linux.database = builtins.fetchurl {
-            url = "https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-i686-linux";
-            sha256 = "${{ steps.prefetch-i686-linux.outputs.hash }}";
           };
           x86_64-darwin.database = builtins.fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-x86_64-darwin";
