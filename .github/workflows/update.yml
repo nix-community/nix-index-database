@@ -56,6 +56,12 @@ jobs:
       with:
         name: mic92
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - name: Update the flake lock
+      run: |
+        nix flake update --commit-lock-file
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git push origin HEAD:main
     - name: run nix-index
       run: nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.indexName }}-index --system ${{matrix.indexName}} 2>&1 | grep -v '+ generating index:'
     - name: upload artifact
@@ -158,7 +164,8 @@ jobs:
     - name: test if flake works
       run: |
         nix flake show
-        nix flake check -L
+        # We don't want to build the checks since we don't have virtualisation support on github runners
+        nix flake check -L --all-systems --no-build
     - name: commit and push packages.nix, if it changed
       run: |
         if [[ "$(git status --porcelain)" != "" ]]; then
