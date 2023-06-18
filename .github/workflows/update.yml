@@ -5,8 +5,27 @@ on:
     # every sunday at 2:51
     - cron: '51 2 * * 0'
 jobs:
+  update-lock:
+    runs-on: ubuntu-latest
+    name: Update flake.lock
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v21
+      with:
+        nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz
+        extra_nix_config: |
+          access-tokens = github.com=${{ github.token }}
+          system-features = nixos-test benchmark big-parallel kvm
+    - name: Update the flake lock
+      run: |
+        nix flake update --commit-lock-file
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git push origin HEAD:main
+
   index:
     runs-on: ubuntu-latest
+    needs: update-lock
     strategy:
       matrix:
         include:
@@ -56,12 +75,6 @@ jobs:
       with:
         name: mic92
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - name: Update the flake lock
-      run: |
-        nix flake update --commit-lock-file
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git push origin HEAD:main
     - name: run nix-index
       run: nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.indexName }}-index --system ${{matrix.indexName}} 2>&1 | grep -v '+ generating index:'
     - name: upload artifact
