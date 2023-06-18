@@ -1,4 +1,4 @@
-{ nixpkgs, nixIndexModule }:
+{ system, nixpkgs, nixIndexModule }:
 {
   nixosTest = nixpkgs.lib.nixos.runTest {
     name = "nix-index-nixos-test";
@@ -35,6 +35,6 @@
         node1.succeed(", rg --help")
       '';
     }];
-    hostPkgs = nixpkgs.legacyPackages.x86_64-linux;
+    hostPkgs = nixpkgs.legacyPackages.${system};
   };
 }

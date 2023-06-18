@@ -158,7 +158,8 @@ jobs:
     - name: test if flake works
       run: |
         nix flake show
-        nix flake check -L
+        # We don't want to build the checks since we don't have virtualisation support on github runners
+        nix flake check -L --all-systems --no-build
     - name: commit and push packages.nix, if it changed
       run: |
         if [[ "$(git status --porcelain)" != "" ]]; then

@@ -3,22 +3,25 @@
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs/master";
 
-  outputs = { self, nixpkgs, ... }: with nixpkgs.lib;
+  outputs = { self, nixpkgs, ... }:
     let
-      systems = attrNames self.legacyPackages;
+      inherit (nixpkgs) lib;
 
-      packages = genAttrs systems
-        (system: {
-          default = self.packages.${system}.nix-index-with-db;
-          nix-index-with-db =
-            nixpkgs.legacyPackages.${system}.callPackage ./nix-index-wrapper.nix {
-              nix-index-database = self.legacyPackages.${system}.database;
-            };
-          comma-with-db =
-            nixpkgs.legacyPackages.${system}.callPackage ./comma-wrapper.nix {
-              nix-index-database = self.legacyPackages.${system}.database;
-            };
-        });
+      systems = lib.attrNames self.legacyPackages;
+      # Garnix does not currently have HW accel for aarch64-linux
+      testSystems = [ "x86_64-linux" ];
+
+      packages = lib.genAttrs systems (system: {
+        default = self.packages.${system}.nix-index-with-db;
+        nix-index-with-db =
+          nixpkgs.legacyPackages.${system}.callPackage ./nix-index-wrapper.nix {
+            nix-index-database = self.legacyPackages.${system}.database;
+          };
+        comma-with-db =
+          nixpkgs.legacyPackages.${system}.callPackage ./comma-wrapper.nix {
+            nix-index-database = self.legacyPackages.${system}.database;
+          };
+      });
     in
     {
       inherit packages;
@@ -37,9 +40,11 @@
         inherit packages;
       };
 
-      checks.x86_64-linux = import ./tests.nix {
-        inherit nixpkgs;
-        nixIndexModule = self.nixosModules.nix-index;
-      };
+      checks = lib.genAttrs testSystems (system:
+        import ./tests.nix {
+          inherit system nixpkgs;
+          nixIndexModule = self.nixosModules.nix-index;
+        }
+      );
     };
 }
