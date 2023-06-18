@@ -1,5 +1,7 @@
 builds:
-  exclude: []
+  exclude:
+    # Garnix does not currently have HW accel for aarch64-linux
+    - 'checks.aarch64-linux.nixosTest'
   include:
     - '*.x86_64-linux.*'
     - '*.aarch64-linux.*'

@@ -8,8 +8,7 @@
       inherit (nixpkgs) lib;
 
       systems = lib.attrNames self.legacyPackages;
-      # Garnix does not currently have HW accel for aarch64-linux
-      testSystems = [ "x86_64-linux" ];
+      testSystems = [ "x86_64-linux" "aarch64-linux" ];
 
       packages = lib.genAttrs systems (system: {
         default = self.packages.${system}.nix-index-with-db;
