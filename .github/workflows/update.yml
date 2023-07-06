@@ -136,6 +136,8 @@ jobs:
     needs: upload-index
     steps:
     - uses: actions/checkout@v3
+      with:
+        ref: "${{ GITHUB_REF }}"
     - uses: cachix/install-nix-action@v22
       with:
         extra_nix_config: 'access-tokens = github.com=${{ github.token }}'
