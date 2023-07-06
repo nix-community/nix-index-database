@@ -18,9 +18,9 @@ jobs:
           system-features = nixos-test benchmark big-parallel kvm
     - name: Update the flake lock
       run: |
-        nix flake update --commit-lock-file
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
+        nix flake update --commit-lock-file
         git push origin HEAD:main
 
   index:
