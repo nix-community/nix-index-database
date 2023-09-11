@@ -3,13 +3,17 @@ queue_rules:
     merge_conditions:
       - check-success=Evaluate flake.nix
       - check-success=check nixosTest [x86_64-linux]
+      - check-success=package comma-with-db [aarch64-linux]
       - check-success=package comma-with-db [x86_64-linux]
+      - check-success=package default [aarch64-linux]
       - check-success=package default [x86_64-linux]
+      - check-success=package nix-index-with-db [aarch64-linux]
       - check-success=package nix-index-with-db [x86_64-linux]
 defaults:
   actions:
     queue:
       allow_merging_configuration_change: true
+      method: rebase
 pull_request_rules:
   - name: merge using the merge queue
     conditions:
