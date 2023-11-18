@@ -1,6 +1,4 @@
-{ packages, legacyPackages }:
-{ lib, pkgs, config, ... }:
-
+{ lib, ... }:
 {
   options = {
     programs.nix-index.symlinkToCacheHome = lib.mkOption {
@@ -19,15 +17,5 @@
       '';
     };
   };
-  config = {
-    programs.nix-index = {
-      enable = lib.mkDefault true;
-      package = packages.${pkgs.stdenv.system}.nix-index-with-db;
-    };
-    home.packages = lib.optional config.programs.nix-index-database.comma.enable packages.${pkgs.stdenv.system}.comma-with-db;
-
-    home.file."${config.xdg.cacheHome}/nix-index/files" =
-      lib.mkIf config.programs.nix-index.symlinkToCacheHome
-        { source = legacyPackages.${pkgs.stdenv.system}.database; };
-  };
+  config.programs.nix-index.enable = lib.mkDefault true;
 }

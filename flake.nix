@@ -27,17 +27,30 @@
 
       legacyPackages = import ./packages.nix;
 
-      darwinModules.nix-index = import ./darwin-module.nix {
-        inherit (self) packages;
-      };
+      darwinModules.nix-index.imports = [
+        ({ pkgs, ... }: {
+          programs.nix-index.enable = true;
+          programs.nix-index.package = packages.${pkgs.hostPlatform.system}.nix-index-with-db;
+        })
+      ];
 
-      hmModules.nix-index = import ./home-manager-module.nix {
-        inherit (self) packages legacyPackages;
-      };
+      hmModules.nix-index.imports = [
+        ./home-manager-module.nix
+        ({ pkgs, config, ... }: {
+          programs.nix-index.package = packages.${pkgs.hostPlatform.system}.nix-index-with-db;
+          home.file."${config.xdg.cacheHome}/nix-index/files" = lib.mkIf config.programs.nix-index.symlinkToCacheHome {
+            source = self.legacyPackages.${pkgs.hostPlatform.system}.database;
+          };
+        })
+      ];
 
-      nixosModules.nix-index = import ./nixos-module.nix {
-        inherit packages;
-      };
+      nixosModules.nix-index.imports = [
+        ./nixos-module.nix
+        ({ pkgs, config, ... }: {
+          programs.nix-index.package = lib.mkDefault packages.${pkgs.hostPlatform.system}.nix-index-with-db;
+          environment.systemPackages = lib.optional config.programs.nix-index-database.comma.enable packages.${pkgs.hostPlatform.system}.comma-with-db;
+        })
+      ];
 
       checks = lib.genAttrs testSystems (system:
         import ./tests.nix {
