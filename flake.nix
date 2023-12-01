@@ -12,22 +12,27 @@
 
       databases = import ./packages.nix;
 
-      packages = lib.genAttrs systems (system: {
-        default = self.packages.${system}.nix-index-with-db;
+      mkPackages = pkgs: {
         nix-index-with-db =
-          nixpkgs.legacyPackages.${system}.callPackage ./nix-index-wrapper.nix {
-            nix-index-database = databases.${system}.database;
+          pkgs.callPackage ./nix-index-wrapper.nix {
+            nix-index-database = databases.${pkgs.stdenv.system}.database;
           };
         comma-with-db =
-          nixpkgs.legacyPackages.${system}.callPackage ./comma-wrapper.nix {
-            nix-index-database = databases.${system}.database;
+          pkgs.callPackage ./comma-wrapper.nix {
+            nix-index-database = databases.${pkgs.stdenv.system}.database;
           };
-      });
+      };
     in
     {
-      inherit packages;
+      packages = lib.genAttrs systems (system:
+        (mkPackages nixpkgs.legacyPackages.${system}) // {
+          default = self.packages.${system}.nix-index-with-db;
+        }
+      );
 
       legacyPackages = import ./packages.nix;
+
+      overlays.nix-index = final: prev: mkPackages final;
 
       darwinModules.nix-index = import ./darwin-module.nix {
         inherit databases;
