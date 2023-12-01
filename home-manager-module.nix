@@ -31,7 +31,7 @@ in
   config = {
     programs.nix-index = {
       enable = lib.mkDefault true;
-      package = nix-index-with-db;
+      package = lib.mkDefault nix-index-with-db;
     };
     home.packages = lib.optional config.programs.nix-index-database.comma.enable comma-with-db;
 
