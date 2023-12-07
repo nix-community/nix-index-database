@@ -71,7 +71,7 @@ jobs:
           system-features = nixos-test benchmark big-parallel kvm
     # for nix-index
     - name: Setup cachix
-      uses: cachix/cachix-action@v12
+      uses: cachix/cachix-action@v13
       with:
         name: mic92
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'

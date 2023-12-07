@@ -1,5 +1,14 @@
-{ packages, legacyPackages }:
+{ databases }:
 { lib, pkgs, config, ... }:
+
+let
+  nix-index-with-db = pkgs.callPackage ./nix-index-wrapper.nix {
+    nix-index-database = databases.${pkgs.stdenv.system}.database;
+  };
+  comma-with-db = pkgs.callPackage ./comma-wrapper.nix {
+    nix-index-database = databases.${pkgs.stdenv.system}.database;
+  };
+in
 
 {
   options = {
@@ -22,12 +31,12 @@
   config = {
     programs.nix-index = {
       enable = lib.mkDefault true;
-      package = packages.${pkgs.stdenv.system}.nix-index-with-db;
+      package = lib.mkDefault nix-index-with-db;
     };
-    home.packages = lib.optional config.programs.nix-index-database.comma.enable packages.${pkgs.stdenv.system}.comma-with-db;
+    home.packages = lib.optional config.programs.nix-index-database.comma.enable comma-with-db;
 
     home.file."${config.xdg.cacheHome}/nix-index/files" =
       lib.mkIf config.programs.nix-index.symlinkToCacheHome
-        { source = legacyPackages.${pkgs.stdenv.system}.database; };
+        { source = databases.${pkgs.stdenv.system}.database; };
   };
 }
