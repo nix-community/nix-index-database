@@ -1,5 +1,4 @@
-{ databases }:
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, databases, ... }:
 
 let
   nix-index-with-db = pkgs.callPackage ./nix-index-wrapper.nix {
