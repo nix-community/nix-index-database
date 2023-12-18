@@ -90,22 +90,22 @@ jobs:
       release_name: ${{ steps.date.outputs.date }}
     steps:
     - name: download x86_64-linux artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: x86_64-linux
         path: x86_64-linux-index
     - name: download aarch64-linux artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: aarch64-linux
         path: aarch64-linux-index
     - name: download x86_64-darwin artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: x86_64-darwin
         path: x86_64-darwin-index
     - name: download aarch64-darwin artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: aarch64-darwin
         path: aarch64-darwin-index
