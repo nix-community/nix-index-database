@@ -11,7 +11,7 @@ functionality.
 ## Demo
 
 ``` shell
-$ nix run github:mic92/nix-index-database bin/cntr
+$ nix run github:nix-community/nix-index-database bin/cntr
 cntr.out                                        978,736 x /nix/store/09p2hys5bxcnzcaad3bknlnwsgdkznl1-cntr-1.5.1/bin/cntr
 ```
 
@@ -24,7 +24,7 @@ Include the nixos module in your configuration (requires 23.05 or nixos unstable
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
   
-    nix-index-database.url = "github:Mic92/nix-index-database";
+    nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -60,7 +60,7 @@ Include the nixos module in your configuration (requires 23.05 or nixos unstable
       inputs.nixpkgs.follows = "nixpkgs";
     };
     
-    nix-index-database.url = "github:Mic92/nix-index-database";
+    nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = { nixpkgs, home-manager, nix-index-database, ... }:
@@ -94,7 +94,7 @@ download_nixpkgs_cache_index () {
   filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr A-Z a-z)"
   mkdir -p ~/.cache/nix-index && cd ~/.cache/nix-index
   # -N will only download a new version if there is an update.
-  wget -q -N https://github.com/Mic92/nix-index-database/releases/latest/download/$filename
+  wget -q -N https://github.com/nix-community/nix-index-database/releases/latest/download/$filename
   ln -f $filename files
 }
 
