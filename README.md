@@ -44,6 +44,7 @@ Include the nixos module in your configuration (requires 23.05 or nixos unstable
 }
 ```
 
+You can then call `nix-locate` as usual, it will automatically use the database provided by this repository.
 
 ## Usage in Home-manager
 
@@ -81,6 +82,8 @@ Include the nixos module in your configuration (requires 23.05 or nixos unstable
 
 }
 ```
+
+You can then call `nix-locate` as usual, it will automatically use the database provided by this repository.
 
 Additionally, if your shell is managed by home-manager, you can have `nix-index`
 integrate with your shell's `command-not-found` functionality by
