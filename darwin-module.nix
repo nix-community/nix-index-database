@@ -1,4 +1,4 @@
-{ pkgs, databases, ... }:
+{ lib,  pkgs, databases, ... }:
 
 let
   nix-index-with-db = pkgs.callPackage ./nix-index-wrapper.nix {
@@ -7,6 +7,8 @@ let
 in
 
 {
-  programs.nix-index.enable = true;
-  programs.nix-index.package = nix-index-with-db;
+  programs.nix-index = {
+    enable = lib.mkDefault true;
+    package = lib.mkDefault nix-index-with-db;
+  };
 }
