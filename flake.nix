@@ -67,5 +67,7 @@
           nixIndexModule = self.nixosModules.nix-index;
         }
       );
+
+      formatter = lib.genAttrs systems (system: nixpkgs.legacyPackages.${system}.nixpkgs-fmt);
     };
 }
