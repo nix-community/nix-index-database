@@ -4,7 +4,7 @@
     name = "nix-index-nixos-test";
     imports = [{
       nodes = {
-        node1 = { config, pkgs, ... }: {
+        node1 = { pkgs, ... }: {
           imports = [
             nixIndexModule
             {
