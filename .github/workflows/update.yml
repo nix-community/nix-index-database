@@ -23,18 +23,38 @@ jobs:
         nix flake update --commit-lock-file
         git push origin HEAD:main
 
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release
+    needs: update-lock
+    outputs:
+      release_name: ${{ steps.date.outputs.date }}
+    steps:
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y-%m-%d-%H%M%S')" >> ${GITHUB_OUTPUT}
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: Release ${{ steps.date.outputs.date }}
+        tag_name: ${{ steps.date.outputs.date }}
+
+
   index:
     runs-on: ubuntu-latest
-    needs: update-lock
+    needs: create-release
     strategy:
       matrix:
-        include:
-          - indexName: x86_64-linux
-          - indexName: aarch64-linux
-          # breaks often and no one fixes it
-          - indexName: x86_64-darwin
-          - indexName: aarch64-darwin
+        system: ['x86_64-linux', 'aarch64-linux', 'x86_64-darwin', 'aarch64-darwin']
     name: Build database
+    outputs:
+      x86_64-linux-hash: ${{ steps.hashes.outputs.x86_64-linux }}
+      x86_64-darwin-hash: ${{ steps.hashes.outputs.x86_64-darwin }}
+      aarch64-linux-hash: ${{ steps.hashes.outputs.aarch64-linux }}
+      aarch64-darwin-hash: ${{ steps.hashes.outputs.aarch64-darwin }}
     steps:
     - uses: actions/checkout@v4
     - name: Swap space report before modification
@@ -76,64 +96,23 @@ jobs:
         name: mic92
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
     - name: run nix-index
-      run: nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.indexName }}-index --system ${{matrix.indexName}} 2>&1 | grep -v '+ generating index:'
-    - name: upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.indexName }}
-        path: ./${{ matrix.indexName }}-index
-
-  upload-index:
-    runs-on: ubuntu-latest
-    needs: index
-    outputs:
-      release_name: ${{ steps.date.outputs.date }}
-    steps:
-    - name: download x86_64-linux artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: x86_64-linux
-        path: x86_64-linux-index
-    - name: download aarch64-linux artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: aarch64-linux
-        path: aarch64-linux-index
-    - name: download x86_64-darwin artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: x86_64-darwin
-        path: x86_64-darwin-index
-    - name: download aarch64-darwin artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: aarch64-darwin
-        path: aarch64-darwin-index
-    - run: |
-        mv x86_64-linux-index/files index-x86_64-linux
-        mv aarch64-linux-index/files index-aarch64-linux
-        mv x86_64-darwin-index/files index-x86_64-darwin
-        mv aarch64-darwin-index/files index-aarch64-darwin
-    - name: Get current date
-      id: date
-      run: echo "date=$(date +'%Y-%m-%d-%H%M%S')" >> ${GITHUB_OUTPUT}
-    - name: Create Release
-      id: create_release
+      run: |
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index --system ${{matrix.system}} 2>&1 | grep -v '+ generating index:'
+        mv ./${{ matrix.system }}-index/files ./index-${{ matrix.system }}
+    - name: hash index
+      id: hashes
+      run: |
+        echo "${{ matrix.system }}=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
+    - name: Add to release
       uses: softprops/action-gh-release@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: Release ${{ steps.date.outputs.date }}
-        tag_name: ${{ steps.date.outputs.date }}
-        files: |
-          index-x86_64-linux
-          index-aarch64-linux
-          index-x86_64-darwin
-          index-aarch64-darwin
+        tag_name: ${{ needs.create-release.outputs.release_name }}
+        files: index-${{ matrix.system }}
 
-  update-flake:
+
+  update-generated:
     runs-on: ubuntu-latest
-    needs: upload-index
+    needs: [ 'create-release', 'index']
     steps:
     - uses: actions/checkout@v4
       with:
@@ -141,19 +120,7 @@ jobs:
     - uses: cachix/install-nix-action@V27
       with:
         extra_nix_config: 'access-tokens = github.com=${{ github.token }}'
-    - name: prefetch x86_64-linux index
-      id: prefetch-x86_64-linux
-      run: echo "hash=$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-x86_64-linux)" >> ${GITHUB_OUTPUT}
-    - name: prefetch aarch64-linux index
-      id: prefetch-aarch64-linux
-      run: echo "hash=$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-aarch64-linux)" >> ${GITHUB_OUTPUT}
-    - name: prefetch x86_64-darwin index
-      id: prefetch-x86_64-darwin
-      run: echo "hash=$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-x86_64-darwin)" >> ${GITHUB_OUTPUT}
-    - name: prefetch aarch64-darwin index
-      id: prefetch-aarch64-darwin
-      run: echo "hash=$(nix shell nixpkgs#nix-prefetch -c nix-prefetch-url https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-aarch64-darwin)" >> ${GITHUB_OUTPUT}
-    - name: overwrite flake.nix
+    - name: update database.nix
       run: |
         cat > packages.nix << EOF
         # this file is autogenerated by .github/workflows/update.yml
@@ -163,19 +130,19 @@ jobs:
         {
           x86_64-linux.database = fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-x86_64-linux";
-            sha256 = "${{ steps.prefetch-x86_64-linux.outputs.hash }}";
+            sha256 = "${{ needs.index.outputs.x86_64-linux-hash }}";
           };
           aarch64-linux.database = fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-aarch64-linux";
-            sha256 = "${{ steps.prefetch-aarch64-linux.outputs.hash }}";
+            sha256 = "${{ needs.index.outputs.aarch64-linux-hash }}";
           };
           x86_64-darwin.database = fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-x86_64-darwin";
-            sha256 = "${{ steps.prefetch-x86_64-darwin.outputs.hash }}";
+            sha256 = "${{ needs.index.outputs.x86_64-darwin-hash }}";
            };
           aarch64-darwin.database = fetchurl {
             url = "https://github.com/${{ github.repository }}/releases/download/${{ needs.upload-index.outputs.release_name }}/index-aarch64-darwin";
-            sha256 = "${{ steps.prefetch-aarch64-darwin.outputs.hash }}";
+            sha256 = "${{ needs.index.outputs.aarch64-darwin-hash }}";
           };
         }
         EOF
@@ -190,6 +157,6 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add packages.nix
-          git commit -m "update packages.nix to release ${{ needs.upload-index.outputs.release_name }}"
+          git commit -m "update packages.nix to release ${{ needs.create-release.outputs.release_name }}"
           git push origin HEAD:main
         fi
