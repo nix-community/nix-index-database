@@ -34,20 +34,11 @@
 
       overlays.nix-index = final: prev: mkPackages final;
 
-      darwinModules.nix-index = {
-        imports = [ ./darwin-module.nix ];
-        _module.args = { inherit databases; };
-      };
+      darwinModules.nix-index = import ./darwin-module.nix self;
 
-      hmModules.nix-index = {
-        imports = [ ./home-manager-module.nix ];
-        _module.args = { inherit databases; };
-      };
+      hmModules.nix-index = import ./home-manager-module.nix self;
 
-      nixosModules.nix-index = {
-        imports = [ ./nixos-module.nix ];
-        _module.args = { inherit databases; };
-      };
+      nixosModules.nix-index = import ./nixos-module.nix self;
 
       checks = lib.genAttrs testSystems (system:
         import ./tests.nix {
