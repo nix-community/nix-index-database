@@ -47,7 +47,12 @@
         }
       );
 
-      legacyPackages = import ./packages.nix;
+      legacyPackages = builtins.mapAttrs (systemName: systemPackages:
+        builtins.mapAttrs (name: pkg: lib.warn ''
+          nix-index-database's "legacyPackages.${systemName}.${name}" output is deprecated and will be removed
+          please switch to "packages.${systemName}.${name}" instead
+        '' pkg) systemPackages)
+        self.packages;
 
       overlays.nix-index = final: prev: mkPackages final;
 
