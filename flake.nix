@@ -47,7 +47,11 @@
         }
       );
 
-      legacyPackages = import ./packages.nix;
+      legacyPackages = lib.warn ''
+        nix-index-database's "legacyPackages" output is deprecated and will be removed
+        please switch to "packages" instead
+      ''
+        self.packages;
 
       overlays.nix-index = final: prev: mkPackages final;
 
