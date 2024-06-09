@@ -41,18 +41,24 @@
         };
     in
     {
-      packages = lib.genAttrs systems (system:
-        (mkPackages nixpkgs.legacyPackages.${system}) // {
+      packages = lib.genAttrs systems (
+        system:
+        (mkPackages nixpkgs.legacyPackages.${system})
+        // {
           default = self.packages.${system}.nix-index-with-db;
         }
       );
 
-      legacyPackages = builtins.mapAttrs (systemName: systemPackages:
-        builtins.mapAttrs (name: pkg: lib.warn ''
-          nix-index-database's "legacyPackages.${systemName}.${name}" output is deprecated and will be removed
-          please switch to "packages.${systemName}.${name}" instead
-        '' pkg) systemPackages)
-        self.packages;
+      legacyPackages = builtins.mapAttrs (
+        systemName: systemPackages:
+        builtins.mapAttrs (
+          name: pkg:
+          lib.warn ''
+            nix-index-database's "legacyPackages.${systemName}.${name}" output is deprecated and will be removed
+            please switch to "packages.${systemName}.${name}" instead
+          '' pkg
+        ) systemPackages
+      ) self.packages;
 
       overlays.nix-index = _: mkPackages;
 
@@ -62,7 +68,8 @@
 
       nixosModules.nix-index = import ./nixos-module.nix self;
 
-      checks = lib.genAttrs testSystems (system:
+      checks = lib.genAttrs testSystems (
+        system:
         import ./tests.nix {
           inherit system nixpkgs;
           nixIndexModule = self.nixosModules.nix-index;
