@@ -1,5 +1,10 @@
 self:
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 {
   options = {
     programs.nix-index.symlinkToCacheHome = lib.mkOption {
@@ -20,7 +25,9 @@ self:
     };
 
     home = {
-      packages = lib.optional config.programs.nix-index-database.comma.enable self.packages.${pkgs.stdenv.system}.comma-with-db;
+      packages =
+        lib.optional config.programs.nix-index-database.comma.enable
+          self.packages.${pkgs.stdenv.system}.comma-with-db;
 
       file."${config.xdg.cacheHome}/nix-index/files" =
         lib.mkIf config.programs.nix-index.symlinkToCacheHome
