@@ -15,6 +15,10 @@ $ nix run github:nix-community/nix-index-database bin/cntr
 cntr.out                                        978,736 x /nix/store/09p2hys5bxcnzcaad3bknlnwsgdkznl1-cntr-1.5.1/bin/cntr
 ```
 
+## Requirements
+
+- Nix 2.18 or newer: In our packages we make use of `unsafeDiscardReferences` to skip the nix store checks. On older nix version these packages might fail.
+
 ## Usage in NixOS
 
 Include the nixos module in your configuration (requires 23.05 or nixos unstable)
