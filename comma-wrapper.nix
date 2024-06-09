@@ -18,18 +18,8 @@ symlinkJoin {
     ln -s ${nix-index-database} $out/share/cache/nix-index/files
 
     for cmd in "," "comma"; do
-      ${
-        if lib.versionAtLeast nix-index-unwrapped.version "0.1.6" then
-          ''
-            wrapProgram "$out/bin/$cmd" \
-              --set NIX_INDEX_DATABASE $out/share/cache/nix-index
-          ''
-        else
-          ''
-            wrapProgram "$out/bin/$cmd" \
-              --set XDG_CACHE_HOME $out/share/cache
-          ''
-      }
+      wrapProgram "$out/bin/$cmd" \
+        --set NIX_INDEX_DATABASE $out/share/cache/nix-index
     done
   '';
 
