@@ -60,7 +60,7 @@
         ) systemPackages
       ) self.packages;
 
-      overlays.nix-index = _: mkPackages;
+      overlays.nix-index = final: _prev: mkPackages final;
 
       darwinModules.nix-index = import ./darwin-module.nix self;
 
