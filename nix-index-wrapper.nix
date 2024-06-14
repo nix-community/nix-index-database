@@ -15,6 +15,13 @@ symlinkJoin {
 
     wrapProgram $out/bin/nix-locate \
       --set NIX_INDEX_DATABASE $out/share/cache/nix-index
+
+    mkdir -p $out/etc/profile.d
+    rm -f "$out/etc/profile.d/command-not-found.sh"
+    substitute \
+     "${nix-index-unwrapped}/etc/profile.d/command-not-found.sh" \
+     "$out/etc/profile.d/command-not-found.sh" \
+     --replace-fail "${nix-index-unwrapped}" "$out"
   '';
 
   meta.mainProgram = "nix-locate";
