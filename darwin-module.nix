@@ -12,8 +12,8 @@ self:
   };
 
   environment.systemPackages =
-    lib.optional config.programs.nix-index-database.comma.enable
-    self.packages.${pkgs.stdenv.system}.comma-with-db;
+    lib.mkIf config.programs.nix-index-database.comma.enable
+    [ self.packages.${pkgs.stdenv.system}.comma-with-db ];
 
   _file = ./darwin-module.nix;
 }
