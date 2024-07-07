@@ -23,6 +23,10 @@ cntr.out                                        978,736 x /nix/store/09p2hys5bxc
 
 Include the nixos module in your configuration (requires 23.05 or nixos unstable)
 
+> [!IMPORTANT]
+> When using this module do not also include `nix-index` in your environment.systemPackages list as this
+> will conflict with the nix-index wrapper provided by this project.
+
 ```nix
 {
   inputs = {
@@ -54,6 +58,10 @@ You can then call `nix-locate` as usual, it will automatically use the database 
 
 1. Follow the [manual](https://github.com/nix-community/home-manager/blob/master/docs/nix-flakes.adoc) to set up home-manager with flakes.
 2. Include the home-manager module in your configuration:
+
+> [!IMPORTANT]
+> When using this module do not also include `nix-index` in your home.packages list as this
+> will conflict with the nix-index wrapper provided by this project.
 
 ```nix
 {
