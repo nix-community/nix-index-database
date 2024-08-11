@@ -1,6 +1,6 @@
 # nix-index-database
 
-Weekly updated [nix-index](https://github.com/bennofs/nix-index) database
+Weekly updated [nix-index](https://github.com/bennofs/nix-index) database for nixos-unstable channel.
 
 This repository also provides nixos modules and home-manager modules that add a
 `nix-index` wrapper to use the database from this repository.
@@ -21,7 +21,7 @@ cntr.out                                        978,736 x /nix/store/09p2hys5bxc
 
 ## Usage in NixOS
 
-Include the nixos module in your configuration (requires 23.05 or nixos unstable)
+Include the nixos module in your configuration:
 
 > [!IMPORTANT]
 > When using this module do not also include `nix-index` in your environment.systemPackages list as this
