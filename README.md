@@ -54,6 +54,33 @@ Include the nixos module in your configuration:
 
 You can then call `nix-locate` as usual, it will automatically use the database provided by this repository.
 
+## Usage in nix-darwin
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  outputs = { self, nixpkgs, nix-index-database, ... }: {
+    darwinConfigurations = {
+      my-machine = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./configuration.nix
+          nix-index-database.darwinModules.nix-index
+          # optional to also wrap and install comma
+          # { programs.nix-index-database.comma.enable = true; }
+        ];
+      };
+    };
+  };
+}
+```
+
 ## Usage in Home-manager
 
 1. Follow the [manual](https://github.com/nix-community/home-manager/blob/master/docs/nix-flakes.adoc) to set up home-manager with flakes.
