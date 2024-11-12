@@ -1,6 +1,6 @@
 # nix-index-database
 
-Weekly updated [nix-index](https://github.com/bennofs/nix-index) database for nixos-unstable channel.
+Weekly updated [nix-index](https://github.com/nix-community/nix-index) database for nixos-unstable channel.
 
 This repository also provides nixos modules and home-manager modules that add a
 `nix-index` wrapper to use the database from this repository.
