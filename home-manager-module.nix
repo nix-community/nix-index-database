@@ -7,6 +7,7 @@ self:
 }:
 {
   imports = [
+    ./nix/shared.nix
     ./nix/home-manager-options.nix
   ];
   programs.nix-index.package = lib.mkDefault self.packages.${pkgs.stdenv.system}.nix-index-with-db;
