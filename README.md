@@ -43,8 +43,15 @@ Include the nixos module in your configuration:
         modules = [
           ./configuration.nix
           nix-index-database.nixosModules.nix-index
-          # optional to also wrap and install comma
-          # { programs.nix-index-database.comma.enable = true; }
+
+          {
+            programs = {
+              # Optionally wrap and install pkgs.comma.
+              nix-index-database.comma.enable = true;
+
+              nix-index.enable = true;
+            };
+          }
         ];
       };
     };
@@ -73,8 +80,15 @@ You can then call `nix-locate` as usual, it will automatically use the database 
         modules = [
           ./configuration.nix
           nix-index-database.darwinModules.nix-index
-          # optional to also wrap and install comma
-          # { programs.nix-index-database.comma.enable = true; }
+
+          {
+            programs = {
+              # Optionally wrap and install pkgs.comma.
+              nix-index-database.comma.enable = true;
+
+              nix-index.enable = true;
+            };
+          }
         ];
       };
     };
@@ -114,8 +128,15 @@ You can then call `nix-locate` as usual, it will automatically use the database 
 
         modules = [
           nix-index-database.hmModules.nix-index
-          # optional to also wrap and install comma
-          # { programs.nix-index-database.comma.enable = true; }
+
+          {
+            programs = {
+              # Optionally wrap and install pkgs.comma.
+              nix-index-database.comma.enable = true;
+
+              nix-index.enable = true;
+            };
+          }
         ];
       };
     };
