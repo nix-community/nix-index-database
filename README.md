@@ -46,8 +46,14 @@ Include the nixos module in your configuration:
         ./configuration.nix
         nix-index-database.nixosModules.nix-index
 
-        # Optionally wrap and install pkgs.comma.
-        { programs.nix-index-database.comma.enable = true; }
+        {
+          programs = {
+            # Optionally wrap and install pkgs.comma.
+            nix-index-database.comma.enable = true;
+
+            nix-index.enable = true;
+          };
+        }
       ];
     };
   };
@@ -74,11 +80,17 @@ You can then call `nix-locate` as usual, it will automatically use the database 
       system = "x86_64-linux";
 
       modules = [
-        ./configuration.nix
-        nix-index-database.darwinModules.nix-index
+          ./configuration.nix
+          nix-index-database.darwinModules.nix-index
 
-        # Optionally wrap and install pkgs.comma.
-        { programs.nix-index-database.comma.enable = true; }
+          {
+            programs = {
+              # Optionally wrap and install pkgs.comma.
+              nix-index-database.comma.enable = true;
+
+              nix-index.enable = true;
+            };
+          }
       ];
     };
   };
@@ -121,8 +133,14 @@ You can then call `nix-locate` as usual, it will automatically use the database 
         modules = [
           nix-index-database.hmModules.nix-index
 
-          # Optionally wrap and install pkgs.comma.
-          { programs.nix-index-database.comma.enable = true; }
+          {
+            programs = {
+              # Optionally wrap and install pkgs.comma.
+              nix-index-database.comma.enable = true;
+
+              nix-index.enable = true;
+            };
+          }
         ];
       };
     };
