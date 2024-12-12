@@ -17,7 +17,11 @@
                 {
                   programs.command-not-found.enable = false;
 
-                  programs.nix-index-database.comma.enable = true;
+                  programs = {
+                    nix-index-database.comma.enable = true;
+                    nix-index.enable = true;
+                  };
+
                   # Point comma at our nixpkgs instance.
                   # Passing --nixpkgs-flake instead seems to fail when nix tries to use the network.
                   nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
