@@ -1,12 +1,12 @@
 {
-  lib,
   symlinkJoin,
   makeBinaryWrapper,
   nix-index-unwrapped,
   nix-index-database,
+  db-type ? "full"
 }:
 symlinkJoin {
-  name = "nix-index-with-db-${nix-index-unwrapped.version}";
+  name = "nix-index-with-${db-type}-db-${nix-index-unwrapped.version}";
   paths = [ nix-index-unwrapped ];
   nativeBuildInputs = [ makeBinaryWrapper ];
   postBuild = ''

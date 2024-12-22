@@ -105,19 +105,19 @@ jobs:
         mv ./${{ matrix.system }}-index/files ./index-${{ matrix.system }}
     - name: generate small nix-index database
       run: |
-        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-bin-index --system ${{matrix.system}} --filter-prefix '/bin/' 2>&1 | grep -v '+ generating bin index:'
-        mv ./${{ matrix.system }}-bin-index/files ./bin-index-${{ matrix.system }}
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-small --system ${{matrix.system}} --filter-prefix '/bin/' 2>&1 | grep -v '+ generating small index:'
+        mv ./${{ matrix.system }}-index-small/files ./index-${{ matrix.system }}-small
     - name: hash index
       id: hashes
       run: |
         echo "${{ matrix.system }}=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
-        echo "${{ matrix.system }}-small=$(nix store prefetch-file "file://$PWD/bin-index-${{ matrix.system }}" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
+        echo "${{ matrix.system }}-small=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}-small" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
     - name: add to release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ needs.create-release.outputs.release_name }}
         files: |
-          bin-index-${{ matrix.system }}
+          index-${{ matrix.system }}-small
           index-${{ matrix.system }}
 
 
