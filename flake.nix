@@ -51,7 +51,7 @@
             nix-index-database = nix-index-small-database;
             db-type = "small";
           };
-          comma-with-db = pkgs.callPackage ./comma-wrapper.nix { inherit nix-index-database; };
+          comma-with-db = pkgs.callPackage ./comma-wrapper.nix { nix-index-database = nix-index-small-database; };
         };
     in
     {
