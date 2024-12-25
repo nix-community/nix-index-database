@@ -55,6 +55,10 @@ jobs:
       x86_64-darwin-hash: ${{ steps.hashes.outputs.x86_64-darwin }}
       aarch64-linux-hash: ${{ steps.hashes.outputs.aarch64-linux }}
       aarch64-darwin-hash: ${{ steps.hashes.outputs.aarch64-darwin }}
+      x86_64-linux-small-hash: ${{ steps.hashes.outputs.x86_64-linux-small }}
+      x86_64-darwin-small-hash: ${{ steps.hashes.outputs.x86_64-darwin-small }}
+      aarch64-linux-small-hash: ${{ steps.hashes.outputs.aarch64-linux-small }}
+      aarch64-darwin-small-hash: ${{ steps.hashes.outputs.aarch64-darwin-small }}
     steps:
     - uses: actions/checkout@v4
     - name: Swap space report before modification
@@ -95,19 +99,26 @@ jobs:
       with:
         name: mic92
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - name: run nix-index
+    - name: generate full nix-index database
       run: |
-        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index --system ${{matrix.system}} 2>&1 | grep -v '+ generating index:'
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index --system ${{matrix.system}} 2>&1 | grep -v '+ generating full index:'
         mv ./${{ matrix.system }}-index/files ./index-${{ matrix.system }}
+    - name: generate small nix-index database
+      run: |
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-small --system ${{matrix.system}} --filter-prefix '/bin/' 2>&1 | grep -v '+ generating small index:'
+        mv ./${{ matrix.system }}-index-small/files ./index-${{ matrix.system }}-small
     - name: hash index
       id: hashes
       run: |
         echo "${{ matrix.system }}=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
-    - name: Add to release
+        echo "${{ matrix.system }}-small=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}-small" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
+    - name: add to release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ needs.create-release.outputs.release_name }}
-        files: index-${{ matrix.system }}
+        files: |
+          index-${{ matrix.system }}-small
+          index-${{ matrix.system }}
 
 
   update-generated:
@@ -131,6 +142,10 @@ jobs:
             aarch64-linux = "${{ needs.index.outputs.aarch64-linux-hash }}";
             x86_64-darwin = "${{ needs.index.outputs.x86_64-darwin-hash }}";
             aarch64-darwin = "${{ needs.index.outputs.aarch64-darwin-hash }}";
+            x86_64-linux-small = "${{ needs.index.outputs.x86_64-linux-small-hash }}";
+            aarch64-linux-small = "${{ needs.index.outputs.aarch64-linux-small-hash }}";
+            x86_64-darwin-small = "${{ needs.index.outputs.x86_64-darwin-small-hash }}";
+            aarch64-darwin-small = "${{ needs.index.outputs.aarch64-darwin-small-hash }}";
           };
         }
         EOF
