@@ -1,4 +1,5 @@
 {
+  linkFarm,
   symlinkJoin,
   makeBinaryWrapper,
   nix-index-unwrapped,
@@ -9,12 +10,10 @@ symlinkJoin {
   name = "nix-index-with-${db-type}-db-${nix-index-unwrapped.version}";
   paths = [ nix-index-unwrapped ];
   nativeBuildInputs = [ makeBinaryWrapper ];
+  databaseDirectory = linkFarm "nix-index-database" { files = nix-index-database; };
   postBuild = ''
-    mkdir -p $out/share/cache/nix-index
-    ln -s ${nix-index-database} $out/share/cache/nix-index/files
-
     wrapProgram $out/bin/nix-locate \
-      --set NIX_INDEX_DATABASE $out/share/cache/nix-index
+      --set NIX_INDEX_DATABASE $databaseDirectory
 
     mkdir -p $out/etc/profile.d
     rm -f "$out/etc/profile.d/command-not-found.sh"
