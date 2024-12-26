@@ -1,5 +1,5 @@
 {
-  lib,
+  linkFarm,
   symlinkJoin,
   makeBinaryWrapper,
   comma,
@@ -13,13 +13,11 @@ symlinkJoin {
   name = "comma-with-db-${comma.version}";
   paths = [ commaOverridden ];
   nativeBuildInputs = [ makeBinaryWrapper ];
+  databaseDirectory = linkFarm "nix-index-database" { files = nix-index-database; };
   postBuild = ''
-    mkdir -p $out/share/cache/nix-index
-    ln -s ${nix-index-database} $out/share/cache/nix-index/files
-
     for cmd in "," "comma"; do
       wrapProgram "$out/bin/$cmd" \
-        --set NIX_INDEX_DATABASE $out/share/cache/nix-index
+        --set NIX_INDEX_DATABASE $databaseDirectory
     done
   '';
 
