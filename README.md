@@ -60,6 +60,8 @@ You can then call `nix-locate` as usual, it will automatically use the database 
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    nix-darwin.url = "github:LnL7/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
@@ -67,8 +69,7 @@ You can then call `nix-locate` as usual, it will automatically use the database 
 
   outputs = { self, nixpkgs, nix-index-database, ... }: {
     darwinConfigurations = {
-      my-machine = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+      my-machine = nix-darwin.lib.darwinSystem {
         modules = [
           ./configuration.nix
           nix-index-database.darwinModules.nix-index
