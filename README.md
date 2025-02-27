@@ -31,22 +31,30 @@ Include the nixos module in your configuration:
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
-  
-    nix-index-database.url = "github:nix-community/nix-index-database";
-    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-index-database = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nix-index-database";
+    };
   };
 
   outputs = { self, nixpkgs, nix-index-database, ... }: {
-    nixosConfigurations = {
-      my-nixos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          ./configuration.nix
-          nix-index-database.nixosModules.nix-index
-          # optional to also wrap and install comma
-          # { programs.nix-index-database.comma.enable = true; }
-        ];
-      };
+    nixosConfigurations.my-nixos = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+
+      modules = [
+        ./configuration.nix
+        nix-index-database.nixosModules.nix-index
+
+        {
+          programs = {
+            # Optionally wrap and install pkgs.comma.
+            nix-index-database.comma.enable = true;
+
+            nix-index.enable = true;
+          };
+        }
+      ];
     };
   };
 }
@@ -61,21 +69,29 @@ You can then call `nix-locate` as usual, it will automatically use the database 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
 
-    nix-index-database.url = "github:nix-community/nix-index-database";
-    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+    nix-index-database = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nix-index-database";
+    };
   };
 
   outputs = { self, nixpkgs, nix-index-database, ... }: {
-    darwinConfigurations = {
-      my-machine = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
+    darwinConfigurations.my-darwin = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+
+      modules = [
           ./configuration.nix
           nix-index-database.darwinModules.nix-index
-          # optional to also wrap and install comma
-          # { programs.nix-index-database.comma.enable = true; }
-        ];
-      };
+
+          {
+            programs = {
+              # Optionally wrap and install pkgs.comma.
+              nix-index-database.comma.enable = true;
+
+              nix-index.enable = true;
+            };
+          }
+      ];
     };
   };
 }
@@ -93,32 +109,41 @@ You can then call `nix-locate` as usual, it will automatically use the database 
 ```nix
 {
   inputs = {
-    # Specify the source of Home Manager and Nixpkgs.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    
-    nix-index-database.url = "github:nix-community/nix-index-database";
-    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-index-database = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nix-index-database";
+    };
   };
+
   outputs = { nixpkgs, home-manager, nix-index-database, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      homeConfigurations.jdoe = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations.my-home = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
         modules = [
           nix-index-database.hmModules.nix-index
-          # optional to also wrap and install comma
-          # { programs.nix-index-database.comma.enable = true; }
+
+          {
+            programs = {
+              # Optionally wrap and install pkgs.comma.
+              nix-index-database.comma.enable = true;
+
+              nix-index.enable = true;
+            };
+          }
         ];
       };
     };
-
 }
 ```
 
