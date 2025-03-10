@@ -84,7 +84,7 @@ You can then call `nix-locate` as usual, it will automatically use the database 
 
 ## Usage in Home-manager
 
-1. Follow the [manual](https://github.com/nix-community/home-manager/blob/master/docs/nix-flakes.adoc) to set up home-manager with flakes.
+1. Follow the [manual](https://nix-community.github.io/home-manager/index.xhtml#ch-nix-flakes) to set up home-manager with flakes.
 2. Include the home-manager module in your configuration:
 
 > [!IMPORTANT]
