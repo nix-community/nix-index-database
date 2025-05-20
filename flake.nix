@@ -46,6 +46,8 @@
 
       hmModules.nix-index = import ./home-manager-module.nix self;
 
+      homeModules.nix-index = import ./home-manager-module.nix self;
+
       nixosModules.nix-index = import ./nixos-module.nix self;
 
       checks = lib.genAttrs testSystems (
