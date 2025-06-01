@@ -44,7 +44,11 @@
 
       darwinModules.nix-index = import ./darwin-module.nix self;
 
-      hmModules.nix-index = import ./home-manager-module.nix self;
+      hmModules.nix-index = builtins.warn "nix-index-database: flake output `hmModules` has been renamed to `homeModules`" (
+        import ./home-manager-module.nix self
+      );
+
+      homeModules.nix-index = import ./home-manager-module.nix self;
 
       nixosModules.nix-index = import ./nixos-module.nix self;
 
