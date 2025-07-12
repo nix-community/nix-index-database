@@ -1,4 +1,5 @@
-{ lib, config, ... }: {
+{ lib, config, ... }:
+{
   options = {
     programs.nix-index.symlinkToCacheHome = lib.mkOption {
       type = lib.types.bool;

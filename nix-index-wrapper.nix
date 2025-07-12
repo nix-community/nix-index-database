@@ -4,7 +4,7 @@
   makeBinaryWrapper,
   nix-index-unwrapped,
   nix-index-database,
-  db-type ? "full"
+  db-type ? "full",
 }:
 symlinkJoin {
   name = "nix-index-with-${db-type}-db-${nix-index-unwrapped.version}";
