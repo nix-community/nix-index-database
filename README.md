@@ -113,7 +113,7 @@ You can then call `nix-locate` as usual, it will automatically use the database 
         inherit pkgs;
 
         modules = [
-          nix-index-database.hmModules.nix-index
+          nix-index-database.homeModules.nix-index
           # optional to also wrap and install comma
           # { programs.nix-index-database.comma.enable = true; }
         ];
