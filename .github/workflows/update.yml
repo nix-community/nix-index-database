@@ -64,10 +64,12 @@ jobs:
     - name: Swap space report before modification
       shell: bash
       run: |
-        echo "Memory and swap:"
+        echo "Memory, swap and disk space:"
         free -h
         echo
         swapon --show
+        echo
+        df -h /mnt .
         echo
     - name: Set Swap
       shell: bash
@@ -82,10 +84,12 @@ jobs:
     - name: Swap space report after modification
       shell: bash
       run: |
-        echo "Memory and swap:"
+        echo "Memory, swap and disk space:"
         free -h
         echo
         swapon --show
+        echo
+        df -h /mnt .
         echo
     - uses: cachix/install-nix-action@v31
       with:
