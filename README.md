@@ -42,7 +42,7 @@ Include the nixos module in your configuration:
         system = "x86_64-linux";
         modules = [
           ./configuration.nix
-          nix-index-database.nixosModules.nix-index
+          nix-index-database.nixosModules.default
           # optional to also wrap and install comma
           # { programs.nix-index-database.comma.enable = true; }
         ];
@@ -113,7 +113,7 @@ You can then call `nix-locate` as usual, it will automatically use the database 
         inherit pkgs;
 
         modules = [
-          nix-index-database.homeModules.nix-index
+          nix-index-database.homeModules.default
           # optional to also wrap and install comma
           # { programs.nix-index-database.comma.enable = true; }
         ];
