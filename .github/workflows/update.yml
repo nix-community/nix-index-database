@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Update flake.lock
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz
@@ -60,7 +60,7 @@ jobs:
       aarch64-linux-small-hash: ${{ steps.hashes.outputs.aarch64-linux-small }}
       aarch64-darwin-small-hash: ${{ steps.hashes.outputs.aarch64-darwin-small }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Swap space report before modification
       shell: bash
       run: |
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ 'create-release', 'index']
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         ref: "${{ github.ref_name }}"
     - uses: cachix/install-nix-action@v31
