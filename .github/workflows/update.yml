@@ -101,11 +101,11 @@ jobs:
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
     - name: generate full nix-index database
       run: |
-        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index --system ${{matrix.system}} 2>&1 | grep -v '+ generating full index:'
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index --system ${{matrix.system}} 2>&1 | grep -v '+ generating index:'
         mv ./${{ matrix.system }}-index/files ./index-${{ matrix.system }}
     - name: generate small nix-index database
       run: |
-        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-small --system ${{matrix.system}} --filter-prefix '/bin/' 2>&1 | grep -v '+ generating small index:'
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-small --system ${{matrix.system}} --filter-prefix '/bin/' 2>&1 | grep -v '+ generating index:'
         mv ./${{ matrix.system }}-index-small/files ./index-${{ matrix.system }}-small
     - name: hash index
       id: hashes
