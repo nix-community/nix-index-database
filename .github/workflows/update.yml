@@ -59,6 +59,14 @@ jobs:
       x86_64-darwin-small-hash: ${{ steps.hashes.outputs.x86_64-darwin-small }}
       aarch64-linux-small-hash: ${{ steps.hashes.outputs.aarch64-linux-small }}
       aarch64-darwin-small-hash: ${{ steps.hashes.outputs.aarch64-darwin-small }}
+      x86_64-linux-stable-hash: ${{ steps.hashes.outputs.x86_64-linux-stable }}
+      x86_64-darwin-stable-hash: ${{ steps.hashes.outputs.x86_64-darwin-stable }}
+      aarch64-linux-stable-hash: ${{ steps.hashes.outputs.aarch64-linux-stable }}
+      aarch64-darwin-stable-hash: ${{ steps.hashes.outputs.aarch64-darwin-stable }}
+      x86_64-linux-stable-small-hash: ${{ steps.hashes.outputs.x86_64-linux-stable-small }}
+      x86_64-darwin-stable-small-hash: ${{ steps.hashes.outputs.x86_64-darwin-stable-small }}
+      aarch64-linux-stable-small-hash: ${{ steps.hashes.outputs.aarch64-linux-stable-small }}
+      aarch64-darwin-stable-small-hash: ${{ steps.hashes.outputs.aarch64-darwin-stable-small }}
     steps:
     - uses: actions/checkout@v6
     - name: Swap space report before modification
@@ -107,11 +115,21 @@ jobs:
       run: |
         nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-small --system ${{matrix.system}} --filter-prefix '/bin/' 2>&1 | grep -v '+ generating index:'
         mv ./${{ matrix.system }}-index-small/files ./index-${{ matrix.system }}-small
+    - name: generate stable full nix-index database
+      run: |
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-stable --system ${{matrix.system}} --nixpkgs 'https://github.com/NixOS/nixpkgs/archive/${{ endsWith(matrix.system, '-darwin') && 'nixpkgs-25.05-darwin' || 'nixos-25.05' }}.tar.gz' 2>&1 | grep -v '+ generating index:'
+        mv ./${{ matrix.system }}-index-stable/files ./index-${{ matrix.system }}-stable
+    - name: generate stable small nix-index database
+      run: |
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-stable-small --system ${{matrix.system}} --nixpkgs 'https://github.com/NixOS/nixpkgs/archive/${{ endsWith(matrix.system, '-darwin') && 'nixpkgs-25.05-darwin' || 'nixos-25.05' }}.tar.gz' --filter-prefix '/bin/' 2>&1 | grep -v '+ generating index:'
+        mv ./${{ matrix.system }}-index-stable-small/files ./index-${{ matrix.system }}-stable-small
     - name: hash index
       id: hashes
       run: |
         echo "${{ matrix.system }}=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
         echo "${{ matrix.system }}-small=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}-small" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
+        echo "${{ matrix.system }}-stable=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}-stable" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
+        echo "${{ matrix.system }}-stable-small=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}-stable-small" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
     - name: add to release
       uses: softprops/action-gh-release@v2
       with:
@@ -119,6 +137,8 @@ jobs:
         files: |
           index-${{ matrix.system }}-small
           index-${{ matrix.system }}
+          index-${{ matrix.system }}-stable
+          index-${{ matrix.system }}-stable-small
 
 
   update-generated:
@@ -146,6 +166,14 @@ jobs:
             aarch64-linux-small = "${{ needs.index.outputs.aarch64-linux-small-hash }}";
             x86_64-darwin-small = "${{ needs.index.outputs.x86_64-darwin-small-hash }}";
             aarch64-darwin-small = "${{ needs.index.outputs.aarch64-darwin-small-hash }}";
+            x86_64-linux-stable = "${{ needs.index.outputs.x86_64-linux-stable-hash }}";
+            aarch64-linux-stable = "${{ needs.index.outputs.aarch64-linux-stable-hash }}";
+            x86_64-darwin-stable = "${{ needs.index.outputs.x86_64-darwin-stable-hash }}";
+            aarch64-darwin-stable = "${{ needs.index.outputs.aarch64-darwin-stable-hash }}";
+            x86_64-linux-stable-small = "${{ needs.index.outputs.x86_64-linux-stable-small-hash }}";
+            aarch64-linux-stable-small = "${{ needs.index.outputs.aarch64-linux-stable-small-hash }}";
+            x86_64-darwin-stable-small = "${{ needs.index.outputs.x86_64-darwin-stable-small-hash }}";
+            aarch64-darwin-stable-small = "${{ needs.index.outputs.aarch64-darwin-stable-small-hash }}";
           };
         }
         EOF
