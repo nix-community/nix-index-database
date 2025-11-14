@@ -1,4 +1,3 @@
-self:
 {
   lib,
   pkgs,
@@ -6,7 +5,7 @@ self:
   ...
 }:
 let
-  packages = pkgs.callPackage self { };
+  packages = import ./. { inherit pkgs; };
 in
 {
   imports = [ ./nix/shared.nix ];
@@ -15,6 +14,4 @@ in
   environment.systemPackages = lib.mkIf config.programs.nix-index-database.comma.enable [
     packages.comma-with-db
   ];
-
-  _file = ./darwin-module.nix;
 }
