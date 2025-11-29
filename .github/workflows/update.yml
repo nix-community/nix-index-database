@@ -117,11 +117,11 @@ jobs:
         mv ./${{ matrix.system }}-index-small/files ./index-${{ matrix.system }}-small
     - name: generate stable full nix-index database
       run: |
-        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-stable --system ${{matrix.system}} --nixpkgs 'https://github.com/NixOS/nixpkgs/archive/${{ endsWith(matrix.system, '-darwin') && 'nixpkgs-25.05-darwin' || 'nixos-25.05' }}.tar.gz' 2>&1 | grep -v '+ generating index:'
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-stable --system ${{matrix.system}} --nixpkgs 'https://github.com/NixOS/nixpkgs/archive/${{ endsWith(matrix.system, '-darwin') && 'nixpkgs-25.11-darwin' || 'nixos-25.11' }}.tar.gz' 2>&1 | grep -v '+ generating index:'
         mv ./${{ matrix.system }}-index-stable/files ./index-${{ matrix.system }}-stable
     - name: generate stable small nix-index database
       run: |
-        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-stable-small --system ${{matrix.system}} --nixpkgs 'https://github.com/NixOS/nixpkgs/archive/${{ endsWith(matrix.system, '-darwin') && 'nixpkgs-25.05-darwin' || 'nixos-25.05' }}.tar.gz' --filter-prefix '/bin/' 2>&1 | grep -v '+ generating index:'
+        nix shell --inputs-from .# nixpkgs#nix-index -c nix-index --db ./${{ matrix.system }}-index-stable-small --system ${{matrix.system}} --nixpkgs 'https://github.com/NixOS/nixpkgs/archive/${{ endsWith(matrix.system, '-darwin') && 'nixpkgs-25.11-darwin' || 'nixos-25.11' }}.tar.gz' --filter-prefix '/bin/' 2>&1 | grep -v '+ generating index:'
         mv ./${{ matrix.system }}-index-stable-small/files ./index-${{ matrix.system }}-stable-small
     - name: hash index
       id: hashes
