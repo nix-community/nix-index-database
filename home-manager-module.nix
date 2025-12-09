@@ -1,4 +1,3 @@
-self:
 {
   lib,
   pkgs,
@@ -6,7 +5,7 @@ self:
   ...
 }:
 let
-  packages = pkgs.callPackage self { };
+  packages = import ./. { inherit pkgs; };
 in
 {
   imports = [
@@ -24,5 +23,4 @@ in
       lib.mkIf config.programs.nix-index.symlinkToCacheHome
         { source = packages.nix-index-database; };
   };
-  _file = ./home-manager-module.nix;
 }
