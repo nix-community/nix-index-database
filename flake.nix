@@ -42,13 +42,22 @@
 
       overlays.nix-index = final: _prev: mkPackages final;
 
-      darwinModules.nix-index = ./darwin-module.nix;
+      darwinModules = {
+        default = self.darwinModules.nix-index;
+        nix-index = ./darwin-module.nix;
+      };
 
       hmModules.nix-index = lib.warn "nix-index-database: flake output `hmModules` has been renamed to `homeModules`" ./home-manager-module.nix;
 
-      homeModules.nix-index = ./home-manager-module.nix;
+      homeModules = {
+        default = self.homeModules.nix-index;
+        nix-index = ./home-manager-module.nix;
+      };
 
-      nixosModules.nix-index = ./nixos-module.nix;
+      nixosModules = {
+        default = self.nixosModules.nix-index;
+        nix-index = ./nixos-module.nix;
+      };
 
       checks = lib.genAttrs testSystems (
         system:
