@@ -73,6 +73,8 @@ You can then call `nix-locate` as usual, it will automatically use the database 
         modules = [
           ./configuration.nix
           nix-index-database.darwinModules.nix-index
+          # optional, this is the default
+          # { programs.nix-index-database.enable = true; }
           # optional to also wrap and install comma
           # { programs.nix-index-database.comma.enable = true; }
         ];
