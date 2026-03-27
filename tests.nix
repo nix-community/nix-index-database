@@ -32,7 +32,7 @@
 
           # Check that nix-locate works
           node1.succeed(" | ".join([
-            "nix-locate --top-level --whole-name --at-root '/bin/rg'",
+            "nix-locate --whole-name --at-root '/bin/rg'",
             "cut -d' ' -f1",
             "grep -F 'ripgrep.out'"
           ]))
