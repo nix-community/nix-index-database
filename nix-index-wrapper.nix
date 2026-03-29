@@ -16,11 +16,14 @@ symlinkJoin {
       --set NIX_INDEX_DATABASE $databaseDirectory
 
     mkdir -p $out/etc/profile.d
-    rm -f "$out/etc/profile.d/command-not-found.sh"
-    substitute \
-     "${nix-index-unwrapped}/etc/profile.d/command-not-found.sh" \
-     "$out/etc/profile.d/command-not-found.sh" \
-     --replace-fail "${nix-index-unwrapped}" "$out"
+    cd $out
+    for script in etc/profile.d/command-not-found.*; do
+      rm -f "$out/$script"
+      substitute \
+       "${nix-index-unwrapped}/$script" \
+       "$out/$script" \
+       --replace-fail "${nix-index-unwrapped}" "$out"
+    done
   '';
 
   meta.mainProgram = "nix-locate";
