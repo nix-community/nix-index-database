@@ -6,6 +6,7 @@
 }:
 let
   packages = import ./. { inherit pkgs; };
+  cfg = config.programs.nix-index-database;
 in
 {
   options.programs.nix-index-database = {
@@ -17,12 +18,12 @@ in
     comma.enable = lib.mkEnableOption "wrapping comma with nix-index-database and put it in the PATH";
   };
 
-  config = lib.mkIf config.programs.nix-index-database.enable {
+  config = lib.mkIf cfg.enable {
     programs.nix-index.enable = lib.mkDefault true;
     programs.nix-index.package = lib.mkDefault packages.nix-index-with-db;
     programs.command-not-found.enable = lib.mkDefault false;
-    environment.systemPackages = lib.mkIf config.programs.nix-index-database.comma.enable [
-      packages.comma-with-db
+    environment.systemPackages = lib.mkIf cfg.comma.enable [
+      cfg.comma.package
     ];
   };
 }
