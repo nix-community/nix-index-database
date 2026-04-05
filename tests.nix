@@ -2,13 +2,14 @@
   system,
   nixpkgs,
   nixIndexModule,
+  nixIndexOverlay,
 }:
 {
   nixosTest = nixpkgs.lib.nixos.runTest {
     name = "nix-index-nixos-test";
     imports = [
       {
-        nodes = {
+        nodes = rec {
           node1 =
             { pkgs, ... }:
             {
@@ -25,6 +26,20 @@
                   virtualisation.additionalPaths = [ pkgs.ripgrep ];
                 }
               ];
+              nixpkgs.overlays = [ nixIndexOverlay ];
+            };
+          node2 =
+            { pkgs, ... }:
+            {
+              imports = [
+                node1
+                {
+                  nixpkgs.overlays = [ nixIndexOverlay ];
+                  programs.nix-index-database.comma.package = pkgs.comma-with-db.override {
+                    inherit (pkgs) nix-index-database;
+                  };
+                }
+              ];
             };
         };
         testScript = ''
@@ -36,10 +51,17 @@
             "cut -d' ' -f1",
             "grep -F 'ripgrep.out'"
           ]))
+          node2.succeed(" | ".join([
+            "nix-locate --whole-name --at-root '/share/man/man1/rg.1'",
+            "cut -d' ' -f1",
+            "grep -F 'ripgrep.out'"
+          ]))
 
           # Check that comma works
           node1.fail("rg --help")
+          node2.fail("rg --help")
           node1.succeed(", rg --help")
+          node2.succeed(", rg --help")
         '';
       }
     ];
