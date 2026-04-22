@@ -36,7 +36,7 @@ jobs:
       run: echo "date=$(date +'%Y-%m-%d-%H%M%S')" >> ${GITHUB_OUTPUT}
     - name: Create Release
       id: create_release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -119,7 +119,7 @@ jobs:
         echo "${{ matrix.system }}=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
         echo "${{ matrix.system }}-small=$(nix store prefetch-file "file://$PWD/index-${{ matrix.system }}-small" --json | jq -r .hash)" >> "$GITHUB_OUTPUT"
     - name: add to release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         tag_name: ${{ needs.create-release.outputs.release_name }}
         files: |
