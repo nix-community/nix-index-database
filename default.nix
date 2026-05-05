@@ -33,4 +33,7 @@ in
   comma-with-db = pkgs.callPackage ./comma-wrapper.nix {
     nix-index-database = nix-index-small-database;
   };
+  comma-with-full-db = pkgs.callPackage ./comma-wrapper.nix {
+    inherit nix-index-database;
+  };
 }
