@@ -63,6 +63,8 @@ jobs:
       aarch64-darwin-small-hash: ${{ steps.hashes.outputs.aarch64-darwin-small }}
     steps:
     - uses: actions/checkout@v6
+      with:
+        ref: "${{ github.ref_name }}"
     - name: Swap space report before modification
       shell: bash
       run: |
