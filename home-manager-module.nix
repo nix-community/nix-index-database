@@ -12,7 +12,7 @@ in
     ./nix/shared.nix
     ./nix/home-manager-options.nix
   ];
-  programs.nix-index.package = lib.mkDefault packages.nix-index-with-db;
+  programs.nix-index.package = lib.mkDefault packages.nix-index-with-small-db;
 
   home = {
     packages = lib.mkIf config.programs.nix-index-database.comma.enable [

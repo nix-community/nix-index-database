@@ -25,7 +25,7 @@
         system:
         (mkPackages nixpkgs.legacyPackages.${system})
         // {
-          default = self.packages.${system}.nix-index-with-db;
+          default = self.packages.${system}.nix-index-with-small-db;
         }
       );
 

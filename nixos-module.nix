@@ -19,7 +19,7 @@ in
 
   config = lib.mkIf config.programs.nix-index-database.enable {
     programs.nix-index.enable = lib.mkDefault true;
-    programs.nix-index.package = lib.mkDefault packages.nix-index-with-db;
+    programs.nix-index.package = lib.mkDefault packages.nix-index-with-small-db;
     programs.command-not-found.enable = lib.mkDefault false;
     environment.systemPackages = lib.mkIf config.programs.nix-index-database.comma.enable [
       packages.comma-with-db
