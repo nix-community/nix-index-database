@@ -15,6 +15,19 @@ $ nix run github:nix-community/nix-index-database bin/cntr
 cntr.out                                        978,736 x /nix/store/09p2hys5bxcnzcaad3bknlnwsgdkznl1-cntr-1.5.1/bin/cntr
 ```
 
+## Database Variants
+
+This project provides two database variants:
+
+- **Full (Default)**: Contains all indexed files (including headers, libraries, etc…). It is packaged as `nix-index-with-db`.
+- **Small**: Contains only files under `/bin/` directories (filtered database). It is much smaller, downloads faster, and consumes less memory. It is packaged as `nix-index-with-small-db` (and [comma](https://github.com/nix-community/nix-index-database/blob/f8ed6cdcb1fd28a6ab7b61f4467a4f67fe2d9074/default.nix#L33-L35)).
+
+To switch to the small database, override the `nix-index` package in your configuration:
+
+```nix
+programs.nix-index.package = nix-index-database.packages.${pkgs.stdenv.hostPlatform.system}.nix-index-with-small-db;
+```
+
 ## Requirements
 
 - Nix 2.18 or newer: In our packages we make use of `unsafeDiscardReferences` to skip the nix store checks. On older nix version these packages might fail.
