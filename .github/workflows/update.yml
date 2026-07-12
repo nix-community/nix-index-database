@@ -50,15 +50,13 @@ jobs:
     needs: create-release
     strategy:
       matrix:
-        system: ['x86_64-linux', 'aarch64-linux', 'x86_64-darwin', 'aarch64-darwin']
+        system: ['x86_64-linux', 'aarch64-linux', 'aarch64-darwin']
     name: Build database
     outputs:
       x86_64-linux-hash: ${{ steps.hashes.outputs.x86_64-linux }}
-      x86_64-darwin-hash: ${{ steps.hashes.outputs.x86_64-darwin }}
       aarch64-linux-hash: ${{ steps.hashes.outputs.aarch64-linux }}
       aarch64-darwin-hash: ${{ steps.hashes.outputs.aarch64-darwin }}
       x86_64-linux-small-hash: ${{ steps.hashes.outputs.x86_64-linux-small }}
-      x86_64-darwin-small-hash: ${{ steps.hashes.outputs.x86_64-darwin-small }}
       aarch64-linux-small-hash: ${{ steps.hashes.outputs.aarch64-linux-small }}
       aarch64-darwin-small-hash: ${{ steps.hashes.outputs.aarch64-darwin-small }}
     steps:
@@ -148,11 +146,9 @@ jobs:
           hashes = {
             x86_64-linux = "${{ needs.index.outputs.x86_64-linux-hash }}";
             aarch64-linux = "${{ needs.index.outputs.aarch64-linux-hash }}";
-            x86_64-darwin = "${{ needs.index.outputs.x86_64-darwin-hash }}";
             aarch64-darwin = "${{ needs.index.outputs.aarch64-darwin-hash }}";
             x86_64-linux-small = "${{ needs.index.outputs.x86_64-linux-small-hash }}";
             aarch64-linux-small = "${{ needs.index.outputs.aarch64-linux-small-hash }}";
-            x86_64-darwin-small = "${{ needs.index.outputs.x86_64-darwin-small-hash }}";
             aarch64-darwin-small = "${{ needs.index.outputs.aarch64-darwin-small-hash }}";
           };
         }
