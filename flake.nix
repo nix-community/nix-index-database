@@ -41,6 +41,31 @@
 
       overlays.nix-index = final: _prev: mkPackages final;
 
+      apps = lib.genAttrs systems (system: {
+        default =
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+            adhocDownloadScript = pkgs.writeShellApplication {
+              name = "adhoc-download";
+              runtimeInputs = with pkgs; [
+                wget
+                bash
+              ];
+              text = ''
+                #!/usr/bin/env bash
+                filename="index-$(uname -m | sed 's/^arm64$/aarch64/')-$(uname | tr '[:upper:]' '[:lower:]')"
+                mkdir -p ~/.cache/nix-index && cd ~/.cache/nix-index
+                wget -q -N https://github.com/nix-community/nix-index-database/releases/latest/download/"$filename"
+                ln -f "$filename" files
+              '';
+            };
+          in
+          {
+            type = "app";
+            program = "${lib.getExe adhocDownloadScript}";
+          };
+      });
+
       darwinModules = {
         default = self.darwinModules.nix-index;
         nix-index = ./darwin-module.nix;
