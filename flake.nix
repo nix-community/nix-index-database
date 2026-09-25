@@ -63,6 +63,7 @@
         import ./tests.nix {
           inherit system nixpkgs;
           nixIndexModule = self.nixosModules.nix-index;
+          nixIndexOverlay = self.overlays.nix-index;
         }
       );
 
