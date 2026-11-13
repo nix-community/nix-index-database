@@ -6,6 +6,7 @@
 }:
 let
   packages = import ./. { inherit pkgs; };
+  cfg = config.programs.nix-index-database;
 in
 {
   imports = [
@@ -15,8 +16,8 @@ in
   programs.nix-index.package = lib.mkDefault packages.nix-index-with-db;
 
   home = {
-    packages = lib.mkIf config.programs.nix-index-database.comma.enable [
-      packages.comma-with-db
+    packages = lib.mkIf cfg.comma.enable [
+      cfg.comma.package
     ];
 
     file."${config.xdg.cacheHome}/nix-index/files" =
